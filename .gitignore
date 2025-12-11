@@ -49,7 +49,7 @@ mvnw.cmd
 # course-evaluation-system/backend/target/surefire-reports/
 
 # 其他
-*.orig
+*.orig 
 *.class
 *.jar
 !course-evaluation-system/backend/target/*.jar

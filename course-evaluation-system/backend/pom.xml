@@ -77,6 +77,29 @@
             <scope>test</scope>
         </dependency>
         
+        <!-- H2内存数据库（测试用） -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
+        <!-- Selenium自动化测试 -->
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>4.18.1</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <!-- WebDriverManager自动管理浏览器驱动 -->
+        <dependency>
+            <groupId>io.github.bonigarcia</groupId>
+            <artifactId>webdrivermanager</artifactId>
+            <version>5.7.0</version>
+            <scope>test</scope>
+        </dependency>
+        
         <!-- Flyway数据库迁移工具 -->
         <dependency>
             <groupId>org.flywaydb</groupId>

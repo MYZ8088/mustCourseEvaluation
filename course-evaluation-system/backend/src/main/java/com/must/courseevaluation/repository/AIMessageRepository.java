@@ -49,3 +49,4 @@ public interface AIMessageRepository extends JpaRepository<AIMessage, Long> {
 
 
 
+

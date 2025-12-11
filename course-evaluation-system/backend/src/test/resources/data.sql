@@ -22,3 +22,4 @@ INSERT INTO courses (id, code, name, credits, description, type, assessment_crit
 (4, 'CS401', '人工智能', 3.0, 'AI基础与应用', 'ELECTIVE', '项目60%+考试40%', 1, 1),
 (5, 'BA101', '管理学原理', 3.0, '管理学基础', 'COMPULSORY', '考试60%+案例40%', 2, 3);
 
+
