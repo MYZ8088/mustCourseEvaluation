@@ -3,9 +3,11 @@ package com.must.courseevaluation.whitebox;
 import com.must.courseevaluation.dto.ReviewDto;
 import com.must.courseevaluation.dto.auth.RegisterRequest;
 import com.must.courseevaluation.model.Course;
+import com.must.courseevaluation.model.Faculty;
 import com.must.courseevaluation.model.Review;
 import com.must.courseevaluation.model.User;
 import com.must.courseevaluation.repository.CourseRepository;
+import com.must.courseevaluation.repository.FacultyRepository;
 import com.must.courseevaluation.repository.ReviewRepository;
 import com.must.courseevaluation.repository.UserRepository;
 import com.must.courseevaluation.service.ReviewService;
@@ -60,15 +62,33 @@ public class ReviewServiceWhiteBoxTests {
     @Autowired
     private ReviewRepository reviewRepository;
 
+    @Autowired
+    private FacultyRepository facultyRepository;
+
     private Long testCourseId;
 
     @BeforeAll
     void setUp() {
-        // 准备测试课程
-        Course testCourse = courseRepository.findAll().stream().findFirst().orElse(null);
-        if (testCourse != null) {
-            testCourseId = testCourse.getId();
-        }
+        // 创建测试用的 Faculty 和 Course
+        Faculty faculty = facultyRepository.findAll().stream().findFirst().orElseGet(() -> {
+            Faculty f = new Faculty();
+            f.setName("测试学院");
+            f.setDescription("用于测试的学院");
+            return facultyRepository.save(f);
+        });
+        
+        Course testCourse = courseRepository.findAll().stream().findFirst().orElseGet(() -> {
+            Course c = new Course();
+            c.setCode("TEST001");
+            c.setName("测试课程");
+            c.setCredits(3.0);
+            c.setDescription("用于白盒测试的课程");
+            c.setType(Course.CourseType.COMPULSORY);
+            c.setFaculty(faculty);
+            return courseRepository.save(c);
+        });
+        
+        testCourseId = testCourse.getId();
     }
 
     /**

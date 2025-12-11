@@ -77,21 +77,6 @@
             <scope>test</scope>
         </dependency>
         
-        <!-- Selenium WebDriver 自动化测试 -->
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-java</artifactId>
-            <version>4.27.0</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- WebDriverManager 自动管理浏览器驱动 -->
-        <dependency>
-            <groupId>io.github.bonigarcia</groupId>
-            <artifactId>webdrivermanager</artifactId>
-            <version>5.9.2</version>
-            <scope>test</scope>
-        </dependency>
-        
         <!-- Flyway数据库迁移工具 -->
         <dependency>
             <groupId>org.flywaydb</groupId>
