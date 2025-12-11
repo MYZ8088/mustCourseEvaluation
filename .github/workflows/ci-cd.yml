@@ -75,7 +75,7 @@ jobs:
       working-directory: ./course-evaluation-system/backend
       run: |
         echo "🧪 运行黑盒测试 (Black-Box Testing)"
-        mvn test -Dtest="**/blackbox/*" -DfailIfNoTests=false -q
+        mvn test -Dtest="**/blackbox/*" -DfailIfNoTests=false
       continue-on-error: true
     
     - name: 上传黑盒测试报告
@@ -154,7 +154,7 @@ jobs:
       working-directory: ./course-evaluation-system/backend
       run: |
         echo "🔬 运行白盒测试 (White-Box Testing)"
-        mvn test -Dtest="**/whitebox/*" -DfailIfNoTests=false -q
+        mvn test -Dtest="**/whitebox/*" -DfailIfNoTests=false
       continue-on-error: true
     
     - name: 上传白盒测试报告
@@ -233,7 +233,7 @@ jobs:
       working-directory: ./course-evaluation-system/backend
       run: |
         echo "🔗 运行集成测试 (Integration Testing)"
-        mvn test -Dtest="IntegrationTestWithStubs,IntegrationTestWithDrivers" -DfailIfNoTests=false -q
+        mvn test -Dtest="IntegrationTestWithStubs,IntegrationTestWithDrivers" -DfailIfNoTests=false
       continue-on-error: true
     
     - name: 上传集成测试报告
