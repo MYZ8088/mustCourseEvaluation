@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课程评价系统类图讲解稿</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            background-color: #fff;
+            padding: 50px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            border-left: 5px solid #3498db;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #2980b9;
+            margin-top: 25px;
+        }
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        ul {
+            margin-bottom: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .highlight {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .btn-container {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        .export-btn {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .export-btn:hover {
+            background-color: #219150;
+        }
+        hr {
+            border: 0;
+            border-top: 1px solid #eee;
+            margin: 40px 0;
+        }
+        /* Word Export Specific Styles */
+        @media print {
+            body { background: white; }
+            .container { box-shadow: none; padding: 0; }
+            .btn-container { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="btn-container">
+        <button class="export-btn" onclick="exportToWord()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            导出为 Word 文档
+        </button>
+    </div>
+
+    <div class="container" id="content-area">
+        <h1>🎓 课程评价系统 - 实体层类图设计讲解稿</h1>
+
+        <h2>1. 设计概览</h2>
+        <p>
+            大家好，这张类图展示了我们 <span class="highlight">课程评价系统（Course Evaluation System）</span> 的核心数据模型设计。
+            整个实体层采用了标准的 <strong>JPA/Hibernate</strong> 规范，共包含 <strong>11个核心实体类</strong>，
+            通过清晰的关联关系支撑起系统的四大核心业务板块：<strong>用户管理</strong>、<strong>课程教学</strong>、<strong>评价互动</strong>以及<strong>AI智能助手</strong>。
+        </p>
+
+        <h2>2. 核心模块拆解</h2>
+
+        <h3>① 用户与个性化模块 (User Core)</h3>
+        <p>系统的核心是 <code>User</code> 实体，它不仅是账号体系的基础，还通过多种关联扩展了用户功能：</p>
+        <ul>
+            <li><strong>身份与权限</strong>：通过 <code>Role</code> 区分管理员、学生和教师。</li>
+            <li><strong>个性化偏好</strong>：<code>User</code> 与 <code>UserPreferences</code> 是一对一（1:1）关系，存储用户感兴趣的课程类型和难度，这是实现个性化推荐的关键数据。</li>
+            <li><strong>个人日程</strong>：<code>User</code> 拥有多个 <code>UserSchedule</code>，用于管理学生的私人课表。</li>
+        </ul>
+
+        <h3>② 课程与教学资源模块 (Academic Core)</h3>
+        <p>这部分描述了学校的教学架构，呈现出典型的层级关系：</p>
+        <ul>
+            <li><strong>院系 (Faculty)</strong>：作为顶层组织，包含多个教师和课程。</li>
+            <li><strong>教师 (Teacher)</strong>：归属于特定院系，并讲授多门课程。</li>
+            <li><strong>课程 (Course)</strong>：是评价的主体。每个课程关联一个院系和一位教师，同时拥有自己的 <code>CourseSchedule</code>（课程安排），方便学生查看上课时间和地点。</li>
+            <li><em>亮点</em>：<code>Course</code> 实体中预留了 <code>aiSummary</code> 字段，用于存储 AI 对课程评价的自动总结，提升读取效率。</li>
+        </ul>
+
+        <h3>③ 评价与互动系统 (Review & Interaction)</h3>
+        <p>这是系统最活跃的业务区域：</p>
+        <ul>
+            <li><strong>评价 (Review)</strong>：连接了 <code>User</code>（评价者）和 <code>Course</code>（被评价对象）。支持评分（Rating）、匿名发布以及审核状态（Pending/Approved）。</li>
+            <li><strong>投票 (ReviewVote)</strong>：用户可以对评价进行“点赞”或“踩”，这种互动数据单独通过 <code>ReviewVote</code> 实体记录，保证了评价数据的纯净性。</li>
+        </ul>
+
+        <h3>④ AI 智能助手模块 (AI Integration)</h3>
+        <p>为了支持现代化功能，我们设计了独立的 AI 会话模块：</p>
+        <ul>
+            <li><strong>会话 (AIConversation)</strong>：记录用户与 AI 的每一次完整对话上下文。</li>
+            <li><strong>消息 (AIMessage)</strong>：存储具体的问答内容。</li>
+            <li>这种 1:N 的结构设计，完整保留了对话历史，让 AI 能够基于上下文提供更精准的选课建议。</li>
+        </ul>
+
+        <h2>3. 设计亮点总结</h2>
+        <ul>
+            <li><strong>高内聚低耦合</strong>：模块边界清晰，例如评价逻辑与 AI 逻辑分离，互不干扰。</li>
+            <li><strong>扩展性强</strong>：<code>UserPreferences</code> 的独立设计，为未来引入更复杂的推荐算法预留了空间，而无需修改核心用户表。</li>
+            <li><strong>数据完整性</strong>：通过规范的外键关系（如 Faculty -> Course -> Review），确保了数据的一致性和可追溯性。</li>
+        </ul>
+        
+        <hr>
+        <p style="text-align: center; color: #7f8c8d; font-size: 0.9em;">（演讲提示：汇报时可配合鼠标悬停在类图的对应模块上进行演示）</p>
+    </div>
+
+    <script>
+        function exportToWord() {
+            var header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
+                "xmlns:w='urn:schemas-microsoft-com:office:word' " +
+                "xmlns='http://www.w3.org/TR/REC-html40'>" +
+                "<head><meta charset='utf-8'><title>Export HTML to Word Document with JavaScript</title></head><body>";
+            
+            var footer = "</body></html>";
+            
+            // 获取内容并处理样式，确保Word能识别
+            var contentHTML = document.getElementById("content-area").innerHTML;
+            
+            // 简单的HTML封装，Word能识别这种MIME类型
+            var sourceHTML = header + contentHTML + footer;
+            
+            var source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
+            
+            var fileDownload = document.createElement("a");
+            document.body.appendChild(fileDownload);
+            fileDownload.href = source;
+            fileDownload.download = '课程评价系统_实体层设计讲解稿.doc';
+            fileDownload.click();
+            document.body.removeChild(fileDownload);
+        }
+    </script>
+</body>
+</html>
+
+

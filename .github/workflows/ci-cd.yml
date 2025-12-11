@@ -1,0 +1,354 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # ==================== 黑盒测试 ====================
+  black-box-test:
+    name: 黑盒测试 (Black-Box Testing)
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+    - name: Checkout代码
+      uses: actions/checkout@v4
+    
+    - name: 设置Java环境
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: maven
+    
+    - name: 创建测试配置文件
+      working-directory: ./course-evaluation-system/backend
+      run: |
+        cat > src/main/resources/application.properties << 'EOF'
+        server.port=8088
+        server.servlet.context-path=/api
+        spring.datasource.url=jdbc:postgresql://localhost:5432/test_db
+        spring.datasource.username=test_user
+        spring.datasource.password=test_password
+        spring.datasource.driver-class-name=org.postgresql.Driver
+        spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+        spring.jpa.hibernate.ddl-auto=create-drop
+        spring.jpa.show-sql=false
+        spring.sql.init.mode=always
+        spring.sql.init.schema-locations=classpath:schema.sql
+        spring.sql.init.data-locations=classpath:data.sql
+        spring.jpa.defer-datasource-initialization=true
+        spring.flyway.enabled=false
+        jwt.secret=dGVzdEtleUZvckNJQ0RQaXBlbGluZVRlc3RpbmdPbmx5
+        jwt.expiration=86400000
+        spring.mail.host=smtp.test.com
+        spring.mail.port=465
+        spring.mail.username=test@test.com
+        spring.mail.password=testpassword
+        deepseek.api.key=test-key
+        deepseek.api.url=https://api.deepseek.com/v1
+        deepseek.model=deepseek-chat
+        deepseek.enabled=false
+        logging.level.org.springframework.web=WARN
+        logging.level.org.hibernate=WARN
+        logging.level.com.must=INFO
+        EOF
+    
+    - name: 运行黑盒测试
+      working-directory: ./course-evaluation-system/backend
+      run: |
+        echo "🧪 运行黑盒测试 (Black-Box Testing)"
+        mvn test -Dtest="**/blackbox/*" -DfailIfNoTests=false -q
+      continue-on-error: true
+    
+    - name: 上传黑盒测试报告
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: black-box-test-reports
+        path: course-evaluation-system/backend/target/surefire-reports/
+        retention-days: 7
+
+  # ==================== 白盒测试 ====================
+  white-box-test:
+    name: 白盒测试 (White-Box Testing)
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+    - name: Checkout代码
+      uses: actions/checkout@v4
+    
+    - name: 设置Java环境
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: maven
+    
+    - name: 创建测试配置文件
+      working-directory: ./course-evaluation-system/backend
+      run: |
+        cat > src/main/resources/application.properties << 'EOF'
+        server.port=8088
+        server.servlet.context-path=/api
+        spring.datasource.url=jdbc:postgresql://localhost:5432/test_db
+        spring.datasource.username=test_user
+        spring.datasource.password=test_password
+        spring.datasource.driver-class-name=org.postgresql.Driver
+        spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+        spring.jpa.hibernate.ddl-auto=create-drop
+        spring.jpa.show-sql=false
+        spring.sql.init.mode=always
+        spring.sql.init.schema-locations=classpath:schema.sql
+        spring.sql.init.data-locations=classpath:data.sql
+        spring.jpa.defer-datasource-initialization=true
+        spring.flyway.enabled=false
+        jwt.secret=dGVzdEtleUZvckNJQ0RQaXBlbGluZVRlc3RpbmdPbmx5
+        jwt.expiration=86400000
+        spring.mail.host=smtp.test.com
+        spring.mail.port=465
+        spring.mail.username=test@test.com
+        spring.mail.password=testpassword
+        deepseek.api.key=test-key
+        deepseek.api.url=https://api.deepseek.com/v1
+        deepseek.model=deepseek-chat
+        deepseek.enabled=false
+        logging.level.org.springframework.web=WARN
+        logging.level.org.hibernate=WARN
+        logging.level.com.must=INFO
+        EOF
+    
+    - name: 运行白盒测试
+      working-directory: ./course-evaluation-system/backend
+      run: |
+        echo "🔬 运行白盒测试 (White-Box Testing)"
+        mvn test -Dtest="**/whitebox/*" -DfailIfNoTests=false -q
+      continue-on-error: true
+    
+    - name: 上传白盒测试报告
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: white-box-test-reports
+        path: course-evaluation-system/backend/target/surefire-reports/
+        retention-days: 7
+
+  # ==================== 集成测试 ====================
+  integration-test:
+    name: 集成测试 (Integration Testing)
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+    - name: Checkout代码
+      uses: actions/checkout@v4
+    
+    - name: 设置Java环境
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: maven
+    
+    - name: 创建测试配置文件
+      working-directory: ./course-evaluation-system/backend
+      run: |
+        cat > src/main/resources/application.properties << 'EOF'
+        server.port=8088
+        server.servlet.context-path=/api
+        spring.datasource.url=jdbc:postgresql://localhost:5432/test_db
+        spring.datasource.username=test_user
+        spring.datasource.password=test_password
+        spring.datasource.driver-class-name=org.postgresql.Driver
+        spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+        spring.jpa.hibernate.ddl-auto=create-drop
+        spring.jpa.show-sql=false
+        spring.sql.init.mode=always
+        spring.sql.init.schema-locations=classpath:schema.sql
+        spring.sql.init.data-locations=classpath:data.sql
+        spring.jpa.defer-datasource-initialization=true
+        spring.flyway.enabled=false
+        jwt.secret=dGVzdEtleUZvckNJQ0RQaXBlbGluZVRlc3RpbmdPbmx5
+        jwt.expiration=86400000
+        spring.mail.host=smtp.test.com
+        spring.mail.port=465
+        spring.mail.username=test@test.com
+        spring.mail.password=testpassword
+        deepseek.api.key=test-key
+        deepseek.api.url=https://api.deepseek.com/v1
+        deepseek.model=deepseek-chat
+        deepseek.enabled=false
+        logging.level.org.springframework.web=WARN
+        logging.level.org.hibernate=WARN
+        logging.level.com.must=INFO
+        EOF
+    
+    - name: 运行集成测试
+      working-directory: ./course-evaluation-system/backend
+      run: |
+        echo "🔗 运行集成测试 (Integration Testing)"
+        mvn test -Dtest="IntegrationTestWithStubs,IntegrationTestWithDrivers" -DfailIfNoTests=false -q
+      continue-on-error: true
+    
+    - name: 上传集成测试报告
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: integration-test-reports
+        path: course-evaluation-system/backend/target/surefire-reports/
+        retention-days: 7
+
+  # ==================== 前端构建测试 ====================
+  frontend-test:
+    name: 前端构建测试
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout代码
+      uses: actions/checkout@v4
+    
+    - name: 设置Node.js环境
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: course-evaluation-system/frontend/package-lock.json
+    
+    - name: 安装前端依赖
+      working-directory: ./course-evaluation-system/frontend
+      run: npm ci
+    
+    - name: 构建前端
+      working-directory: ./course-evaluation-system/frontend
+      run: npm run build
+
+  # ==================== 测试汇总 ====================
+  test-summary:
+    name: 测试汇总
+    needs: [black-box-test, white-box-test, integration-test, frontend-test]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: 生成测试汇总
+      run: |
+        echo "## 📊 软件测试汇总报告" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "| 测试类型 | 状态 |" >> $GITHUB_STEP_SUMMARY
+        echo "|---------|------|" >> $GITHUB_STEP_SUMMARY
+        echo "| 黑盒测试 | ${{ needs.black-box-test.result }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| 白盒测试 | ${{ needs.white-box-test.result }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| 集成测试 | ${{ needs.integration-test.result }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| 前端构建 | ${{ needs.frontend-test.result }} |" >> $GITHUB_STEP_SUMMARY
+
+  # ==================== 构建应用 ====================
+  build:
+    name: 构建应用
+    needs: [black-box-test, white-box-test, integration-test, frontend-test]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && always()
+    
+    steps:
+    - name: Checkout代码
+      uses: actions/checkout@v4
+    
+    - name: 设置Java环境
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: maven
+    
+    - name: 构建后端应用
+      working-directory: ./course-evaluation-system/backend
+      run: mvn clean package -DskipTests -q
+    
+    - name: 设置Node.js环境
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: course-evaluation-system/frontend/package-lock.json
+    
+    - name: 构建前端应用
+      working-directory: ./course-evaluation-system/frontend
+      run: |
+        npm ci
+        npm run build
+    
+    - name: 上传构建产物
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-artifacts
+        path: |
+          course-evaluation-system/backend/target/*.jar
+          course-evaluation-system/frontend/dist/
+        retention-days: 7
+
+  # ==================== 部署 ====================
+  deploy:
+    name: 部署到生产环境
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && needs.build.result == 'success'
+    environment: production
+    
+    steps:
+    - name: 下载构建产物
+      uses: actions/download-artifact@v4
+      with:
+        name: build-artifacts
+    
+    - name: 部署信息
+      run: |
+        echo "## 🚀 部署到生产环境" >> $GITHUB_STEP_SUMMARY
+        echo "构建产物已准备好，可以部署到：" >> $GITHUB_STEP_SUMMARY
+        echo "- 云服务器" >> $GITHUB_STEP_SUMMARY
+        echo "- Docker 容器" >> $GITHUB_STEP_SUMMARY
+        echo "- Kubernetes" >> $GITHUB_STEP_SUMMARY

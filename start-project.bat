@@ -1,0 +1,13 @@
+@echo off
+echo Starting Course Evaluation System...
+
+echo Starting Backend...
+start "Backend" cmd /k "cd course-evaluation-system/backend && mvn spring-boot:run"
+
+timeout /t 3 /nobreak >nul
+
+echo Starting Frontend...
+start "Frontend" cmd /k "cd course-evaluation-system/frontend && npm run serve"
+
+echo Both services are starting...
+

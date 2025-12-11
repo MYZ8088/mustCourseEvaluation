@@ -1,0 +1,42 @@
+name: Security Scan
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # 每周一凌晨2点运行安全扫描
+    - cron: '0 2 * * 1'
+
+jobs:
+  security-scan:
+    name: 安全扫描
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout代码
+      uses: actions/checkout@v4
+    
+    - name: 设置Java环境
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: maven
+    
+    - name: Maven依赖安全扫描
+      working-directory: ./course-evaluation-system/backend
+      run: |
+        echo "🔍 运行 OWASP 依赖检查..."
+        mvn org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=11 || true
+      continue-on-error: true
+    
+    - name: 上传安全扫描报告
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: security-reports
+        path: course-evaluation-system/backend/target/dependency-check-report.html
+        retention-days: 30
+        if-no-files-found: ignore

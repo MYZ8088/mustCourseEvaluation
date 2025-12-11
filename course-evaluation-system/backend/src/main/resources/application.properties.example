@@ -1,0 +1,84 @@
+# ============================================
+# Course Evaluation System - Configuration Template
+# ============================================
+# Copy this file to application.properties and fill in your values
+# NEVER commit application.properties with real credentials!
+
+# Server Configuration
+server.port=8088
+server.servlet.context-path=/api
+
+# Database Configuration - PostgreSQL
+spring.datasource.url=${DATABASE_URL:jdbc:postgresql://localhost:5432/course_evaluation}
+spring.datasource.username=${DATABASE_USERNAME:your_db_username}
+spring.datasource.password=${DATABASE_PASSWORD:your_db_password}
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# HikariCP Connection Pool
+spring.datasource.hikari.connection-timeout=10000
+spring.datasource.hikari.maximum-pool-size=10
+spring.datasource.hikari.minimum-idle=5
+spring.datasource.hikari.idle-timeout=300000
+spring.datasource.hikari.max-lifetime=600000
+
+# JPA/Hibernate Configuration
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=false
+spring.jpa.properties.hibernate.format_sql=false
+
+# Hibernate Performance
+spring.jpa.properties.hibernate.jdbc.batch_size=20
+spring.jpa.properties.hibernate.order_inserts=true
+spring.jpa.properties.hibernate.order_updates=true
+spring.jpa.properties.hibernate.jdbc.batch_versioned_data=true
+spring.jpa.properties.hibernate.default_batch_fetch_size=16
+
+# Database Initialization
+spring.sql.init.mode=never
+spring.sql.init.schema-locations=classpath:schema.sql
+spring.sql.init.data-locations=classpath:data.sql
+spring.jpa.defer-datasource-initialization=true
+
+# Flyway
+spring.flyway.enabled=false
+
+# JWT Configuration
+# Generate a secure key: openssl rand -base64 64
+jwt.secret=${JWT_SECRET:your_jwt_secret_key_here}
+jwt.expiration=${JWT_EXPIRATION:86400000}
+
+# CORS Configuration
+spring.webmvc.cors.mapping=/**
+spring.webmvc.cors.allowed-origins=${CORS_ALLOWED_ORIGINS:http://localhost:8080}
+spring.webmvc.cors.allowed-methods=GET,POST,PUT,DELETE
+spring.webmvc.cors.allowed-headers=*
+spring.webmvc.cors.allow-credentials=true
+spring.webmvc.cors.max-age=1800
+
+# Logging
+logging.level.org.springframework.web=INFO
+logging.level.org.hibernate=WARN
+logging.level.com.must=DEBUG
+
+# Mail Configuration (QQ Mail with SSL)
+spring.mail.host=${MAIL_HOST:smtp.qq.com}
+spring.mail.port=${MAIL_PORT:465}
+spring.mail.username=${MAIL_USERNAME:your_email@qq.com}
+spring.mail.password=${MAIL_PASSWORD:your_email_auth_code}
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.ssl.enable=true
+spring.mail.properties.mail.smtp.ssl.trust=${MAIL_HOST:smtp.qq.com}
+spring.mail.properties.mail.smtp.socketFactory.class=javax.net.ssl.SSLSocketFactory
+spring.mail.properties.mail.smtp.socketFactory.port=${MAIL_PORT:465}
+spring.mail.properties.mail.smtp.connectiontimeout=10000
+spring.mail.properties.mail.smtp.timeout=10000
+spring.mail.properties.mail.smtp.writetimeout=10000
+spring.mail.default-encoding=UTF-8
+
+# DeepSeek AI Configuration
+deepseek.api.key=${DEEPSEEK_API_KEY:your_deepseek_api_key}
+deepseek.api.url=${DEEPSEEK_API_URL:https://api.deepseek.com/v1}
+deepseek.model=${DEEPSEEK_MODEL:deepseek-chat}
+deepseek.enabled=${DEEPSEEK_ENABLED:true}
+

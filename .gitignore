@@ -1,0 +1,55 @@
+# 后端
+/target/
+course-evaluation-system/backend/target/
+
+# 前端
+course-evaluation-system/frontend/node_modules/
+course-evaluation-system/frontend/dist/
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# 日志
+*.log
+*.log.*
+logs/
+
+# 环境变量和敏感信息 (重要!)
+.env
+.env.local
+.env.production
+.env.development
+*.env
+
+# 敏感配置文件 - 不要上传真实配置!
+# 使用 application.properties.example 作为模板
+course-evaluation-system/backend/src/main/resources/application.properties
+
+# 数据库
+*.db
+*.sqlite
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 临时文件
+*.tmp
+*.temp
+*.bak
+
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
+
+# 测试报告（可选保留）
+# course-evaluation-system/backend/target/surefire-reports/
+
+# 其他
+*.orig
+*.class
+*.jar
+!course-evaluation-system/backend/target/*.jar
