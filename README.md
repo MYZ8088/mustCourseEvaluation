@@ -199,8 +199,8 @@
 ### 1. 克隆项目
 
 ```bash
-git clone https://github.com/MYZ8088/DmustEvaluation.git
-cd DmustEvaluation
+git clone https://github.com/MYZ8088/mustCourseEvaluation.git
+cd mustCourseEvaluation
 ```
 
 ### 2. 环境配置
@@ -552,8 +552,8 @@ cp -r dist/* /var/www/html/
 ## 📞 联系方式
 
 - **项目维护者**: MYZ8088
-- **GitHub**: [https://github.com/MYZ8088/DmustEvaluation](https://github.com/MYZ8088/DmustEvaluation)
-- **问题反馈**: [GitHub Issues](https://github.com/MYZ8088/DmustEvaluation/issues)
+- **GitHub**: [https://github.com/MYZ8088/mustCourseEvaluation](https://github.com/MYZ8088/mustCourseEvaluation)
+- **问题反馈**: [GitHub Issues](https://github.com/MYZ8088/mustCourseEvaluation/issues)
 
 ---
 
